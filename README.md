@@ -1,6 +1,9 @@
 # sergetol_infra
 sergetol Infra repository
 
+bastion_IP = 35.228.243.121
+someinternalhost_IP = 10.166.0.3
+
 ## Для подключения к someinternalhost через bastion в одну команду:
 `ssh -i ~/.ssh/appuser -A -J appuser@35.228.243.121 appuser@10.166.0.3`
 [//]: # (`ssh -i ~/.ssh/appuser -J appuser@35.228.243.121 appuser@10.166.0.3`)
@@ -25,3 +28,10 @@ sergetol Infra repository
 - далее для подключения можно использовать команды:
       ssh bastion
       ssh someinternalhost
+
+## Прикручивание Lets Encrypt сертификата к Pritunl:
+- в веб-интерфейсе Pritunl заходим в Settings
+- там в поле Lets Encrypt Domain вводим, например,
+`vpn.35-228-243-121.sslip.io`
+где 35-228-243-121 это внешний IP Pritunl через `-`
+- далее нажимаем Save, и Pritunl сам все сделает
