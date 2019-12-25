@@ -16,25 +16,27 @@ someinternalhost_IP = 10.166.0.3
 
 - создать файл ~/.ssh/config со следующим содержимым:
 
-      Host bastion
-        User appuser
-        Hostname 35.228.243.121
-        Port 22
-        IdentityFile ~/.ssh/appuser
-        ForwardAgent yes
+```
+Host bastion
+  User appuser
+  Hostname 35.228.243.121
+  Port 22
+  IdentityFile ~/.ssh/appuser
+  ForwardAgent yes
 
-      Host someinternalhost
-        User appuser
-        Hostname 10.166.0.3
-        Port 22
-        IdentityFile ~/.ssh/appuser
-        ForwardAgent yes
-        ProxyJump appuser@35.228.243.121
+Host someinternalhost
+  User appuser
+  Hostname 10.166.0.3
+  Port 22
+  IdentityFile ~/.ssh/appuser
+  ForwardAgent yes
+  ProxyJump appuser@35.228.243.121
+```
 
 - далее для подключения можно использовать команды:
 
-      ssh bastion
-      ssh someinternalhost
+`ssh bastion`
+`ssh someinternalhost`
 
 ## Прикручивание Lets Encrypt сертификата к Pritunl:
 
@@ -53,14 +55,16 @@ testapp_port = 9292
 
 ## Использование startup-script:
 
-    gcloud compute instances create reddit-app \
-      --boot-disk-size=10GB \
-      --image-family ubuntu-1604-lts \
-      --image-project=ubuntu-os-cloud \
-      --machine-type=g1-small \
-      --tags puma-server \
-      --restart-on-failure \
-      --metadata-from-file startup-script=./startup.sh
+```
+gcloud compute instances create reddit-app \
+  --boot-disk-size=10GB \
+  --image-family ubuntu-1604-lts \
+  --image-project=ubuntu-os-cloud \
+  --machine-type=g1-small \
+  --tags puma-server \
+  --restart-on-failure \
+  --metadata-from-file startup-script=./startup.sh
+```
 
 - посмотреть startup script лог можно потом так:
 
@@ -75,12 +79,27 @@ testapp_port = 9292
 
 - потом использовать команду:
 
-    gcloud compute instances create reddit-app \
-      --boot-disk-size=10GB \
-      --image-family ubuntu-1604-lts \
-      --image-project=ubuntu-os-cloud \
-      --machine-type=g1-small \
-      --tags puma-server \
-      --restart-on-failure \
-      --scopes storage-ro \
-      --metadata startup-script-url=gs://sergetol-bucket/cloud-testapp/startup.sh
+```
+gcloud compute instances create reddit-app \
+  --boot-disk-size=10GB \
+  --image-family ubuntu-1604-lts \
+  --image-project=ubuntu-os-cloud \
+  --machine-type=g1-small \
+  --tags puma-server \
+  --restart-on-failure \
+  --scopes storage-ro \
+  --metadata startup-script-url=gs://sergetol-bucket/cloud-testapp/startup.sh
+```
+
+## Создание нового firewall правила:
+
+```
+gcloud compute firewall-rules create default-puma-server \
+  --network default \
+  --direction ingress \
+  --action allow \
+  --target-tags puma-server \
+  --source-ranges 0.0.0.0/0 \
+  --rules tcp:9292 \
+  --no-disabled
+```
