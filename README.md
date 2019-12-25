@@ -50,3 +50,37 @@ someinternalhost_IP = 10.166.0.3
 
 testapp_IP = 35.228.243.121
 testapp_port = 9292
+
+## Использование startup-script:
+
+    gcloud compute instances create reddit-app \
+      --boot-disk-size=10GB \
+      --image-family ubuntu-1604-lts \
+      --image-project=ubuntu-os-cloud \
+      --machine-type=g1-small \
+      --tags puma-server \
+      --restart-on-failure \
+      --metadata-from-file startup-script=./startup.sh
+
+- посмотреть startup script лог можно потом так:
+
+`sudo journalctl -u google-startup-scripts.service`
+
+## Использование startup-script-url:
+
+- предварительно можно создать bucket и загрузить startup script туда:
+
+`gsutil mb -l europe-north1 gs://sergetol-bucket/`
+`gsutil cp ./startup.sh gs://sergetol-bucket/cloud-testapp/startup.sh`
+
+- потом использовать команду:
+
+    gcloud compute instances create reddit-app \
+      --boot-disk-size=10GB \
+      --image-family ubuntu-1604-lts \
+      --image-project=ubuntu-os-cloud \
+      --machine-type=g1-small \
+      --tags puma-server \
+      --restart-on-failure \
+      --scopes storage-ro \
+      --metadata startup-script-url=gs://sergetol-bucket/cloud-testapp/startup.sh
