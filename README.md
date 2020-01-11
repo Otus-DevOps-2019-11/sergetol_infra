@@ -103,3 +103,28 @@ gcloud compute firewall-rules create default-puma-server \
   --rules tcp:9292 \
   --no-disabled
 ```
+
+# HW5
+
+- создан параметризованный шаблон для сборки базового образа с помощью Packer
+
+`packer validate -var-file=./variables.json ./ubuntu16.json`
+`packer validate -var-file=./variables.json.example ./ubuntu16.json`
+`packer build -var-file=./variables.json ./ubuntu16.json`
+
+- создан параметризованный шаблон для сборки полного (на основе базового) образа с помощью Packer
+
+`packer validate -var-file=./files/variables.json ./immutable.json`
+`packer validate -var-file=./files/variables.json.example ./immutable.json`
+`packer build -var-file=./files/variables.json ./immutable.json`
+
+- добавлен скрипт создания через gcloud виртуальной машины из подготовленного полного образа
+
+```
+gcloud compute instances create reddit-app \
+  --boot-disk-size=10GB \
+  --image-family=reddit-full \
+  --machine-type=f1-micro \
+  --tags=puma-server \
+  --restart-on-failure
+```
