@@ -4,6 +4,7 @@ sergetol Infra repository
 # HW3
 
 bastion_IP = 35.228.243.121
+
 someinternalhost_IP = 10.166.0.3
 
 ## Для подключения к someinternalhost через bastion в одну команду:
@@ -36,6 +37,7 @@ Host someinternalhost
 - далее для подключения можно использовать команды:
 
 `ssh bastion`
+
 `ssh someinternalhost`
 
 ## Прикручивание Lets Encrypt сертификата к Pritunl:
@@ -51,6 +53,7 @@ Host someinternalhost
 # HW4
 
 testapp_IP = 35.228.243.121
+
 testapp_port = 9292
 
 ## Использование startup-script:
@@ -75,6 +78,7 @@ gcloud compute instances create reddit-app \
 - предварительно можно создать bucket и загрузить startup script туда:
 
 `gsutil mb -l europe-north1 gs://sergetol-bucket/`
+
 `gsutil cp ./startup.sh gs://sergetol-bucket/cloud-testapp/startup.sh`
 
 - потом использовать команду:
@@ -109,13 +113,17 @@ gcloud compute firewall-rules create default-puma-server \
 - создан параметризованный шаблон для сборки базового образа с помощью Packer
 
 `packer validate -var-file=./variables.json ./ubuntu16.json`
+
 `packer validate -var-file=./variables.json.example ./ubuntu16.json`
+
 `packer build -var-file=./variables.json ./ubuntu16.json`
 
 - создан параметризованный шаблон для сборки полного (на основе базового) образа с помощью Packer
 
 `packer validate -var-file=./files/variables.json ./immutable.json`
+
 `packer validate -var-file=./files/variables.json.example ./immutable.json`
+
 `packer build -var-file=./files/variables.json ./immutable.json`
 
 - добавлен скрипт создания через gcloud виртуальной машины из подготовленного полного образа
@@ -128,3 +136,10 @@ gcloud compute instances create reddit-app \
   --tags=puma-server \
   --restart-on-failure
 ```
+
+# HW6
+
+## Использование metadata в Terraform
+
+- если metadata ssh-keys определена на уровне инстанса VM в terraform, то, если добавить ssh-ключ некого нового пользователя через веб-интерфейс GCE в проект, к уже созданным на этот момент через terraform машинам под этим новым пользователем можно будет сразу подключиться;<br/>после пересоздания через terraform таких машин подключение к ним также работает как под пользователями, присутствующими в metadata инстанса VM, так и под пользователями, добавленными через веб-интерфейс GCE в проект
+- если же метаданные ssh-keys определить на уровне google_compute_project_metadata_item в terraform, то ssh-ключ некого нового пользователя, добавленый через веб-интерфейс GCE в проект, работать не будет;<br/>такой ключ будет потерян(удален) при terraform apply
