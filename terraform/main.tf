@@ -14,7 +14,8 @@ provider "google" {
 }
 
 resource "google_compute_instance" "app" {
-  name         = "reddit-app"
+  count        = var.vm_count
+  name         = "reddit-app${count.index + 1}"
   machine_type = var.machine_type
   zone         = var.zone
   tags         = ["reddit-app"]
@@ -53,6 +54,11 @@ resource "google_compute_instance" "app" {
   provisioner "remote-exec" {
     script = "files/deploy.sh"
   }
+
+  depends_on = [
+    google_compute_firewall.firewall_puma,
+    google_compute_project_metadata_item.default
+  ]
 }
 
 resource "google_compute_firewall" "firewall_puma" {
