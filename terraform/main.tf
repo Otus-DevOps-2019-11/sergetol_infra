@@ -38,7 +38,7 @@ resource "google_compute_instance" "app" {
 
   metadata = {
     # Путь до публичного ключа
-    ssh-keys = "appuser:${file(var.public_key_path)}"
+    ssh-keys = "appuser:${file(var.public_key_path)}\nappuser1:${file(var.public_key_path)}\nappuser2:${file(var.public_key_path)}\nappuser3:${file(var.public_key_path)}"
   }
 
   connection {
