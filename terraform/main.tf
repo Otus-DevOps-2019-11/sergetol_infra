@@ -34,7 +34,9 @@ resource "google_compute_instance" "app" {
     # Сеть, к которой присоединить данный интерфейс
     network = "default"
     # Использовать ephemeral IP для доступа из Интернет
-    access_config {}
+    access_config {
+      nat_ip = google_compute_address.app_ip[count.index].address
+    }
   }
 
   connection {
@@ -56,7 +58,7 @@ resource "google_compute_instance" "app" {
   }
 
   depends_on = [
-    google_compute_firewall.firewall_puma,
+    google_compute_firewall.firewall_ssh,
     google_compute_project_metadata_item.default
   ]
 }
@@ -76,8 +78,26 @@ resource "google_compute_firewall" "firewall_puma" {
   target_tags = ["reddit-app"]
 }
 
+resource "google_compute_firewall" "firewall_ssh" {
+  name        = "default-allow-ssh"
+  network     = "default"
+  description = "Allow SSH from anywhere"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+}
+
 resource "google_compute_project_metadata_item" "default" {
   key     = "ssh-keys"
   value   = "appuser:${file(var.public_key_path)}\nappuser1:${file(var.public_key_path)}\nappuser2:${file(var.public_key_path)}\nappuser3:${file(var.public_key_path)}"
   project = var.project
+}
+
+resource "google_compute_address" "app_ip" {
+  count = var.vm_count
+  name  = "reddit-app-ip${count.index + 1}"
 }
