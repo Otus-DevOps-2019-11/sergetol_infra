@@ -20,11 +20,11 @@ resource "google_compute_project_metadata_item" "default" {
 }
 
 module "app" {
-  source           = "./modules/app"
+  source           = "../modules/app"
   zone             = var.zone
   machine_type     = var.machine_type
   private_key_path = var.private_key_path
-  vm_count         = var.vm_count
+  vm_count         = var.app_vm_count
   app_disk_image   = var.app_disk_image
 
   vm_depends_on = [
@@ -35,7 +35,7 @@ module "app" {
 }
 
 module "db" {
-  source        = "./modules/db"
+  source        = "../modules/db"
   zone          = var.zone
   machine_type  = var.machine_type
   db_disk_image = var.db_disk_image
@@ -46,6 +46,6 @@ module "db" {
 }
 
 module "vpc" {
-  source        = "./modules/vpc"
-  source_ranges = ["0.0.0.0/0"]
+  source        = "../modules/vpc"
+  source_ranges = ["194.1.156.30/32"]
 }

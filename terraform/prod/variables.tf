@@ -18,10 +18,6 @@ variable machine_type {
   default     = "f1-micro"
 }
 
-variable disk_image {
-  description = "Disk image"
-}
-
 variable public_key_path {
   # Описание переменной
   description = "Path to the public key used for ssh access"
@@ -31,8 +27,8 @@ variable private_key_path {
   description = "Path to the private key used for ssh access"
 }
 
-variable vm_count {
-  description = "VM count"
+variable app_vm_count {
+  description = "App VM count"
   default     = 1
 }
 
