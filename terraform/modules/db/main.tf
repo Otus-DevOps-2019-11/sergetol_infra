@@ -21,9 +21,7 @@ resource "google_compute_instance" "db" {
     access_config {}
   }
 
-  depends_on = [
-    google_compute_project_metadata_item.default
-  ]
+  depends_on = [var.vm_depends_on]
 }
 
 resource "google_compute_firewall" "firewall_mongo" {

@@ -22,8 +22,8 @@ resource "google_compute_instance" "app" {
       nat_ip = google_compute_address.app_ip[count.index].address
     }
   }
-  /*
-  connection {
+
+  /*connection {
     type  = "ssh"
     host  = self.network_interface[0].access_config[0].nat_ip
     user  = "appuser"
@@ -39,12 +39,9 @@ resource "google_compute_instance" "app" {
 
   provisioner "remote-exec" {
     script = "files/deploy.sh"
-  }
-*/
-  depends_on = [
-    google_compute_firewall.firewall_ssh,
-    google_compute_project_metadata_item.default
-  ]
+  }*/
+
+  depends_on = [var.vm_depends_on]
 }
 
 resource "google_compute_firewall" "firewall_puma" {
