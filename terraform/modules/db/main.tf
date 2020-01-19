@@ -21,6 +21,21 @@ resource "google_compute_instance" "db" {
     access_config {}
   }
 
+  connection {
+    type  = "ssh"
+    host  = self.network_interface[0].access_config[0].nat_ip
+    user  = "appuser"
+    agent = false
+    # путь до приватного ключа
+    private_key = file(var.private_key_path)
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo sed -i 's/^ExecStart.*/& --bind_ip ${self.network_interface[0].network_ip}/' /lib/systemd/system/mongod.service && sudo systemctl daemon-reload && sudo systemctl restart mongod"
+    ]
+  }
+
   depends_on = [var.vm_depends_on]
 }
 

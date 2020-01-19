@@ -23,7 +23,7 @@ resource "google_compute_instance" "app" {
     }
   }
 
-  /*connection {
+  connection {
     type  = "ssh"
     host  = self.network_interface[0].access_config[0].nat_ip
     user  = "appuser"
@@ -33,13 +33,13 @@ resource "google_compute_instance" "app" {
   }
 
   provisioner "file" {
-    source      = "files/puma.service"
+    content     = templatefile("${path.module}/puma.service.tmpl", { database_url = var.database_url })
     destination = "/tmp/puma.service"
   }
 
   provisioner "remote-exec" {
-    script = "files/deploy.sh"
-  }*/
+    script = "${path.module}/deploy.sh"
+  }
 
   depends_on = [var.vm_depends_on]
 }

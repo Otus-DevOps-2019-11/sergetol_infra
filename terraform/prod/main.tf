@@ -26,6 +26,7 @@ module "app" {
   private_key_path = var.private_key_path
   vm_count         = var.app_vm_count
   app_disk_image   = var.app_disk_image
+  database_url     = "${module.db.db_internal_ip}:27017"
 
   vm_depends_on = [
     google_compute_project_metadata_item.default,
@@ -35,13 +36,15 @@ module "app" {
 }
 
 module "db" {
-  source        = "../modules/db"
-  zone          = var.zone
-  machine_type  = var.machine_type
-  db_disk_image = var.db_disk_image
+  source           = "../modules/db"
+  zone             = var.zone
+  machine_type     = var.machine_type
+  db_disk_image    = var.db_disk_image
+  private_key_path = var.private_key_path
 
   vm_depends_on = [
-    google_compute_project_metadata_item.default
+    google_compute_project_metadata_item.default,
+    module.vpc
   ]
 }
 
