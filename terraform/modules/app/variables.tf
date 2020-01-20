@@ -35,3 +35,8 @@ variable "database_url" {
 variable "enable_provision" {
   default = true
 }
+
+variable "env" {
+  description = "Environment name: e.g., stage, prod"
+  default     = ""
+}

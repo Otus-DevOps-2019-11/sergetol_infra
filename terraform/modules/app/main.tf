@@ -1,9 +1,9 @@
 resource "google_compute_instance" "app" {
   count        = var.vm_count
-  name         = "reddit-app${count.index + 1}"
+  name         = "reddit-app${count.index + 1}-${trimspace(var.env)}"
   machine_type = var.machine_type
   zone         = var.zone
-  tags         = ["reddit-app"]
+  tags         = ["reddit-app-${trimspace(var.env)}"]
 
   # Определение загрузочного диска
   boot_disk {
@@ -51,7 +51,7 @@ resource "google_compute_instance" "app" {
 }
 
 resource "google_compute_firewall" "firewall_puma" {
-  name = "allow-puma-default"
+  name = "allow-puma-default-${trimspace(var.env)}"
   # Название сети, в которой действует правило
   network = "default"
   # Какой доступ разрешить
@@ -62,10 +62,10 @@ resource "google_compute_firewall" "firewall_puma" {
   # Каким адресам разрешаем доступ
   source_ranges = ["0.0.0.0/0"]
   # Правило применимо для инстансов с перечисленными тэгами
-  target_tags = ["reddit-app"]
+  target_tags = ["reddit-app-${trimspace(var.env)}"]
 }
 
 resource "google_compute_address" "app_ip" {
   count = var.vm_count
-  name  = "reddit-app-ip${count.index + 1}"
+  name  = "reddit-app-ip${count.index + 1}-${trimspace(var.env)}"
 }

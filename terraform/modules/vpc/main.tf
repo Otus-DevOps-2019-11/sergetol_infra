@@ -1,7 +1,7 @@
 resource "google_compute_firewall" "firewall_ssh" {
-  name        = "default-allow-ssh"
+  name        = "default-allow-ssh-${trimspace(var.env)}"
   network     = "default"
-  description = "Allow SSH from anywhere"
+  description = "Allow SSH"
 
   allow {
     protocol = "tcp"

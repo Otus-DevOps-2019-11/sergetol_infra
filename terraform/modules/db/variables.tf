@@ -25,3 +25,8 @@ variable "private_key_path" {
 variable "enable_provision" {
   default = true
 }
+
+variable "env" {
+  description = "Environment name: e.g., stage, prod"
+  default     = ""
+}

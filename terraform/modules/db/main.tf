@@ -1,8 +1,8 @@
 resource "google_compute_instance" "db" {
-  name         = "reddit-db"
+  name         = "reddit-db-${trimspace(var.env)}"
   machine_type = var.machine_type
   zone         = var.zone
-  tags         = ["reddit-db"]
+  tags         = ["reddit-db-${trimspace(var.env)}"]
 
   # Определение загрузочного диска
   boot_disk {
@@ -40,7 +40,7 @@ resource "google_compute_instance" "db" {
 }
 
 resource "google_compute_firewall" "firewall_mongo" {
-  name = "allow-mongo-default"
+  name = "allow-mongo-default-${trimspace(var.env)}"
   # Название сети, в которой действует правило
   network = "default"
   # Какой доступ разрешить
@@ -49,6 +49,6 @@ resource "google_compute_firewall" "firewall_mongo" {
     ports    = ["27017"]
   }
   # Правило применимо для инстансов с перечисленными тэгами
-  target_tags = ["reddit-db"]
-  source_tags = ["reddit-app"]
+  target_tags = ["reddit-db-${trimspace(var.env)}"]
+  source_tags = ["reddit-app-${trimspace(var.env)}"]
 }

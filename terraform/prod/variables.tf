@@ -45,3 +45,13 @@ variable db_disk_image {
 variable "enable_provision" {
   default = true
 }
+
+variable "ssh_source_ranges" {
+  description = "Allowed IP addresses"
+  default     = ["0.0.0.0/0"]
+}
+
+variable "env" {
+  description = "Environment name: e.g., stage, prod"
+  default     = ""
+}

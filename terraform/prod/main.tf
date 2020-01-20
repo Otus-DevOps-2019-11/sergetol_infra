@@ -28,6 +28,7 @@ module "app" {
   app_disk_image   = var.app_disk_image
   database_url     = "${module.db.db_internal_ip}:27017"
   enable_provision = var.enable_provision
+  env              = var.env
 
   vm_depends_on = [
     google_compute_project_metadata_item.default,
@@ -43,6 +44,7 @@ module "db" {
   db_disk_image    = var.db_disk_image
   private_key_path = var.private_key_path
   enable_provision = var.enable_provision
+  env              = var.env
 
   vm_depends_on = [
     google_compute_project_metadata_item.default,
@@ -52,5 +54,6 @@ module "db" {
 
 module "vpc" {
   source        = "../modules/vpc"
-  source_ranges = ["194.1.156.30/32"]
+  source_ranges = var.ssh_source_ranges
+  env           = var.env
 }
