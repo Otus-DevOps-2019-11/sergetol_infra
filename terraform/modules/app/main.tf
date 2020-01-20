@@ -32,13 +32,19 @@ resource "google_compute_instance" "app" {
     private_key = file(var.private_key_path)
   }
 
+  provisioner "remote-exec" {
+    inline = [
+      var.enable_provision ? "cat /dev/null" : "echo Provision disabled!"
+    ]
+  }
+
   provisioner "file" {
     content     = templatefile("${path.module}/puma.service.tmpl", { database_url = var.database_url })
-    destination = "/tmp/puma.service"
+    destination = var.enable_provision ? "/tmp/puma.service" : "/dev/null"
   }
 
   provisioner "remote-exec" {
-    script = "${path.module}/deploy.sh"
+    script = var.enable_provision ? "${path.module}/deploy.sh" : null
   }
 
   depends_on = [var.vm_depends_on]

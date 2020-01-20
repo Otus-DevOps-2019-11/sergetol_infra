@@ -32,7 +32,7 @@ resource "google_compute_instance" "db" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo sed -i 's/^ExecStart.*/& --bind_ip ${self.network_interface[0].network_ip}/' /lib/systemd/system/mongod.service && sudo systemctl daemon-reload && sudo systemctl restart mongod"
+      var.enable_provision ? "sudo sed -i 's/^ExecStart.*/& --bind_ip ${self.network_interface[0].network_ip}/' /lib/systemd/system/mongod.service && sudo systemctl daemon-reload && sudo systemctl restart mongod" : "echo Provision disabled!"
     ]
   }
 

@@ -27,6 +27,7 @@ module "app" {
   vm_count         = var.app_vm_count
   app_disk_image   = var.app_disk_image
   database_url     = "${module.db.db_internal_ip}:27017"
+  enable_provision = var.enable_provision
 
   vm_depends_on = [
     google_compute_project_metadata_item.default,
@@ -41,6 +42,7 @@ module "db" {
   machine_type     = var.machine_type
   db_disk_image    = var.db_disk_image
   private_key_path = var.private_key_path
+  enable_provision = var.enable_provision
 
   vm_depends_on = [
     google_compute_project_metadata_item.default,
