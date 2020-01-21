@@ -159,6 +159,7 @@ gcloud compute instances create reddit-app \
 - создан новый storage backet с помощью terraform
 
 Посмотреть содержимое бакета можно командой:
+
 `gsutil ls -r gs://tf-state-strg-bckt/**`
 
 - (*) настроено хранение стейт файла в GCS удаленном бэкенде
@@ -166,3 +167,23 @@ gcloud compute instances create reddit-app \
 При хранении стейт файла в удаленном бэкенде корректно работает режим блокировок.<br/>При попытке запустить одновременно terraform apply одной и той же конфигурации из разных мест один из запусков будет неудачным с ошибкой Error locking state,<br/>потому как tflock-файл уже будет существовать, и будет выведена информация о существующей блокировке
 
 - (**) в модули app и db добавлены provisioner для настройки и старта приложения;<br/>добавлена возможность отключения provisioner (переменная enable_provision)
+
+# HW8
+
+## Использование команд ansible
+
+- Примеры простых команд:
+
+`ansible app -m shell -a 'ruby -v; bundler -v'`
+
+`ansible db -m service -a name=mongod`
+
+`ansible app -m service -a name=puma.service`
+
+`ansible app -m git -a 'repo=https://github.com/express42/reddit.git dest=/home/appuser/reddit'`
+
+## Выполнение простого плейбука
+
+`ansible-playbook clone.yml`
+
+- После удаления папки ~/reddit на app выполнение плейбука clone.yml на app закончится уже с changed=1,<br/>что будет свидетельствовать о том, что были произведены изменения
