@@ -1,0 +1,41 @@
+{
+    "variables": {
+        "var_project_id": "",
+        "var_image_family": "reddit-app-base",
+        "var_source_image_family": "",
+        "var_zone": "europe-north1-a",
+        "var_ssh_username": "appuser",
+        "var_machine_type": "f1-micro",
+        "var_disk_size": "10",
+        "var_disk_type": "pd-ssd",
+        "var_image_description": "Reddit app base image",
+        "var_network": "default",
+        "var_on_host_maintenance": "MIGRATE",
+        "var_tags": "puma-server"
+    },
+    "builders": [
+        {
+            "type": "googlecompute",
+            "project_id": "{{user `var_project_id`}}",
+            "image_name": "{{user `var_image_family`}}-{{timestamp}}",
+            "image_family": "{{user `var_image_family`}}",
+            "source_image_family": "{{user `var_source_image_family`}}",
+            "zone": "{{user `var_zone`}}",
+            "ssh_username": "{{user `var_ssh_username`}}",
+            "machine_type": "{{user `var_machine_type`}}",
+            "disk_size": "{{user `var_disk_size`}}",
+            "disk_type": "{{user `var_disk_type`}}",
+            "image_description": "{{user `var_image_description`}}",
+            "network": "{{user `var_network`}}",
+            "on_host_maintenance": "{{user `var_on_host_maintenance`}}",
+            "tags": "{{user `var_tags`}}"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "script": "scripts/install_ruby.sh",
+            "execute_command": "sudo {{.Path}}"
+        }
+    ]
+}

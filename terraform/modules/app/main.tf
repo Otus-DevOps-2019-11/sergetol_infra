@@ -1,29 +1,14 @@
-terraform {
-  # Версия terraform
-  required_version = "~>0.12.8"
-}
-
-provider "google" {
-  # Версия провайдера
-  version = "~>2.15"
-
-  # ID проекта
-  project = var.project
-
-  region = var.region
-}
-
 resource "google_compute_instance" "app" {
   count        = var.vm_count
-  name         = "reddit-app${count.index + 1}"
+  name         = "reddit-app${count.index + 1}-${trimspace(var.env)}"
   machine_type = var.machine_type
   zone         = var.zone
-  tags         = ["reddit-app"]
+  tags         = ["reddit-app-${trimspace(var.env)}"]
 
   # Определение загрузочного диска
   boot_disk {
     initialize_params {
-      image = var.disk_image
+      image = var.app_disk_image
       size  = 10
       type  = "pd-ssd"
     }
@@ -33,8 +18,9 @@ resource "google_compute_instance" "app" {
   network_interface {
     # Сеть, к которой присоединить данный интерфейс
     network = "default"
-    # Использовать ephemeral IP для доступа из Интернет
-    access_config {}
+    access_config {
+      nat_ip = google_compute_address.app_ip[count.index].address
+    }
   }
 
   connection {
@@ -46,23 +32,26 @@ resource "google_compute_instance" "app" {
     private_key = file(var.private_key_path)
   }
 
+  provisioner "remote-exec" {
+    inline = [
+      var.enable_provision ? "cat /dev/null" : "echo Provision disabled!"
+    ]
+  }
+
   provisioner "file" {
-    source      = "files/puma.service"
-    destination = "/tmp/puma.service"
+    content     = templatefile("${path.module}/puma.service.tmpl", { database_url = var.database_url })
+    destination = var.enable_provision ? "/tmp/puma.service" : "/dev/null"
   }
 
   provisioner "remote-exec" {
-    script = "files/deploy.sh"
+    script = var.enable_provision ? "${path.module}/deploy.sh" : null
   }
 
-  depends_on = [
-    google_compute_firewall.firewall_puma,
-    google_compute_project_metadata_item.default
-  ]
+  depends_on = [var.vm_depends_on]
 }
 
 resource "google_compute_firewall" "firewall_puma" {
-  name = "allow-puma-default"
+  name = "allow-puma-default-${trimspace(var.env)}"
   # Название сети, в которой действует правило
   network = "default"
   # Какой доступ разрешить
@@ -73,11 +62,10 @@ resource "google_compute_firewall" "firewall_puma" {
   # Каким адресам разрешаем доступ
   source_ranges = ["0.0.0.0/0"]
   # Правило применимо для инстансов с перечисленными тэгами
-  target_tags = ["reddit-app"]
+  target_tags = ["reddit-app-${trimspace(var.env)}"]
 }
 
-resource "google_compute_project_metadata_item" "default" {
-  key     = "ssh-keys"
-  value   = "appuser:${file(var.public_key_path)}\nappuser1:${file(var.public_key_path)}\nappuser2:${file(var.public_key_path)}\nappuser3:${file(var.public_key_path)}"
-  project = var.project
+resource "google_compute_address" "app_ip" {
+  count = var.vm_count
+  name  = "reddit-app-ip${count.index + 1}-${trimspace(var.env)}"
 }
