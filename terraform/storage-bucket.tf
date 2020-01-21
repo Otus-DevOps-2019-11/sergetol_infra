@@ -8,8 +8,9 @@ module "storage-bucket" {
   source  = "SweetOps/storage-bucket/google"
   version = "0.3.0"
 
-  name     = "tf-state-strg-bckt"
-  location = var.region
+  name          = "tf-state-strg-bckt"
+  location      = var.region
+  force_destroy = true
 }
 
 output storage-bucket_url {
