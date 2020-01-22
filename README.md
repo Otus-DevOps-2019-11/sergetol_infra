@@ -187,3 +187,30 @@ gcloud compute instances create reddit-app \
 `ansible-playbook clone.yml`
 
 - После удаления папки ~/reddit на app выполнение плейбука clone.yml на app закончится уже с changed=1,<br/>что будет свидетельствовать о том, что были произведены изменения
+
+## Использование статического JSON inventory
+
+- Пример статического JSON inventory (inventory.static.json):<br/>(простое преобразование из YAML в JSON)
+
+```
+{
+  "all": {
+    "children": {
+      "app": {
+        "hosts": {
+          "appserver": {
+            "ansible_host": "35.228.122.135"
+          }
+        }
+      },
+      "db": {
+        "hosts": {
+          "dbserver": {
+            "ansible_host": "35.228.55.239"
+          }
+        }
+      }
+    }
+  }
+}
+```
