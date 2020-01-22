@@ -159,6 +159,7 @@ gcloud compute instances create reddit-app \
 - создан новый storage backet с помощью terraform
 
 Посмотреть содержимое бакета можно командой:
+
 `gsutil ls -r gs://tf-state-strg-bckt/**`
 
 - (*) настроено хранение стейт файла в GCS удаленном бэкенде
@@ -166,3 +167,102 @@ gcloud compute instances create reddit-app \
 При хранении стейт файла в удаленном бэкенде корректно работает режим блокировок.<br/>При попытке запустить одновременно terraform apply одной и той же конфигурации из разных мест один из запусков будет неудачным с ошибкой Error locking state,<br/>потому как tflock-файл уже будет существовать, и будет выведена информация о существующей блокировке
 
 - (**) в модули app и db добавлены provisioner для настройки и старта приложения;<br/>добавлена возможность отключения provisioner (переменная enable_provision)
+
+# HW8
+
+## Использование команд ansible
+
+- примеры простых команд:
+
+`ansible app -m shell -a 'ruby -v; bundler -v'`
+
+`ansible db -m service -a name=mongod`
+
+`ansible app -m service -a name=puma.service`
+
+`ansible app -m git -a 'repo=https://github.com/express42/reddit.git dest=/home/appuser/reddit'`
+
+## Выполнение простого плейбука
+
+`ansible-playbook clone.yml`
+
+- после удаления папки ~/reddit на app выполнение плейбука clone.yml на app закончится уже с changed=1,<br/>что будет свидетельствовать о том, что были произведены изменения
+
+## Использование статического JSON inventory
+
+- пример статического JSON inventory (inventory.static.json):<br/>(простое преобразование из YAML в JSON)
+
+```
+{
+  "all": {
+    "children": {
+      "app": {
+        "hosts": {
+          "appserver": {
+            "ansible_host": "35.228.122.135"
+          }
+        }
+      },
+      "db": {
+        "hosts": {
+          "dbserver": {
+            "ansible_host": "35.228.55.239"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+## Простой пример использования динамического JSON inventory
+
+- пример (результирующего) динамического JSON inventory (inventory.json):<br/>(можно проследить отличия от статического JSON inventory)
+
+```
+{
+  "all": {
+    "children": [
+      "app",
+      "db",
+      "ungrouped"
+    ]
+  },
+  "app": {
+    "hosts": [
+      "appserver"
+    ]
+  },
+  "db": {
+    "hosts": [
+      "dbserver"
+    ]
+  },
+  "_meta": {
+    "hostvars": {
+      "appserver": {
+        "ansible_host": "35.228.122.135"
+      },
+      "dbserver": {
+        "ansible_host": "35.228.55.239"
+      }
+    }
+  }
+}
+```
+
+- для работы с таким готовым динамическим JSON inventory можно использовать простой скрипт (inventory.sh):
+
+```
+#!/bin/bash
+set -e
+
+cat ./inventory.json
+```
+
+- использование этого скрипта затем необходимо прописать в ansible.cfg:
+
+```
+[defaults]
+inventory = ./inventory.sh
+```
