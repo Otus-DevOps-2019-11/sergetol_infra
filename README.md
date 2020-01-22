@@ -172,7 +172,7 @@ gcloud compute instances create reddit-app \
 
 ## Использование команд ansible
 
-- Примеры простых команд:
+- примеры простых команд:
 
 `ansible app -m shell -a 'ruby -v; bundler -v'`
 
@@ -186,11 +186,11 @@ gcloud compute instances create reddit-app \
 
 `ansible-playbook clone.yml`
 
-- После удаления папки ~/reddit на app выполнение плейбука clone.yml на app закончится уже с changed=1,<br/>что будет свидетельствовать о том, что были произведены изменения
+- после удаления папки ~/reddit на app выполнение плейбука clone.yml на app закончится уже с changed=1,<br/>что будет свидетельствовать о том, что были произведены изменения
 
 ## Использование статического JSON inventory
 
-- Пример статического JSON inventory (inventory.static.json):<br/>(простое преобразование из YAML в JSON)
+- пример статического JSON inventory (inventory.static.json):<br/>(простое преобразование из YAML в JSON)
 
 ```
 {
@@ -213,4 +213,56 @@ gcloud compute instances create reddit-app \
     }
   }
 }
+```
+
+## Простой пример использования динамического JSON inventory
+
+- пример (результирующего) динамического JSON inventory (inventory.json):<br/>(можно проследить отличия от статического JSON inventory)
+
+```
+{
+  "all": {
+    "children": [
+      "app",
+      "db",
+      "ungrouped"
+    ]
+  },
+  "app": {
+    "hosts": [
+      "appserver"
+    ]
+  },
+  "db": {
+    "hosts": [
+      "dbserver"
+    ]
+  },
+  "_meta": {
+    "hostvars": {
+      "appserver": {
+        "ansible_host": "35.228.122.135"
+      },
+      "dbserver": {
+        "ansible_host": "35.228.55.239"
+      }
+    }
+  }
+}
+```
+
+- для работы с таким готовым динамическим JSON inventory можно использовать простой скрипт (inventory.sh):
+
+```
+#!/bin/bash
+set -e
+
+cat ./inventory.json
+```
+
+- использование этого скрипта затем необходимо прописать в ansible.cfg:
+
+```
+[defaults]
+inventory = ./inventory.sh
 ```
