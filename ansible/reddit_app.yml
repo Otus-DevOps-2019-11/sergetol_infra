@@ -1,8 +1,9 @@
+---
 - name: Configure hosts & deploy application
   hosts: all
   vars:
-    mongo_bind_ip: "{{db_internal_ip }}"
-    db_host: "{{db_internal_ip }}:27017"
+    mongo_bind_ip: "{{ db_internal_ip }}"
+    db_host: "{{ db_internal_ip }}:27017"
   tasks:
     - debug:
         var: ansible_host
