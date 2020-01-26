@@ -7,9 +7,11 @@ then
 
   app_external_ip=`cd ../terraform/$tf_env && terraform output app_external_ip | grep -o -E '[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}'`
   db_external_ip=`cd ../terraform/$tf_env && terraform output db_external_ip | grep -o -E '[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}'`
+  db_internal_ip=`cd ../terraform/$tf_env && terraform output db_internal_ip | grep -o -E '[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}'`
 
   #echo "app_external_ip = "$app_external_ip
   #echo "db_external_ip = "$db_external_ip
+  #echo "db_internal_ip = "$db_internal_ip
 
   counter=1
   appservers=""
@@ -47,6 +49,13 @@ then
     db_hostvars+="\"reddit-db-$tf_env\": { \"ansible_host\": \"$db_external_ip\" }"
   fi
 
+  all_vars=""
+
+  if [ "$db_internal_ip" != "" ]
+  then
+    all_vars+="\"db_internal_ip\": \"$db_internal_ip\""
+  fi
+
 cat<<EOF
 {
   "all": {
@@ -54,7 +63,10 @@ cat<<EOF
       "app",
       "db",
       "ungrouped"
-    ]
+    ],
+    "vars": {
+      $all_vars
+    }
   },
   "app": {
     "hosts": [

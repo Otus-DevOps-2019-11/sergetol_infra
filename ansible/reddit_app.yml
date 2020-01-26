@@ -1,12 +1,16 @@
 - name: Configure hosts & deploy application
   hosts: all
   vars:
-    mongo_bind_ip: 0.0.0.0
-    db_host: 10.166.0.5
+    mongo_bind_ip: "{{db_internal_ip }}"
+    db_host: "{{db_internal_ip }}:27017"
   tasks:
     - debug:
-        msg: db_host={{ db_host }}
+        var: ansible_host
       tags: always
+
+    - debug:
+        var: mongo_bind_ip
+      tags: db-tag
 
     - name: Change mongo config file
       become: true
@@ -16,6 +20,10 @@
         mode: 0644
       tags: db-tag
       notify: restart mongod
+
+    - debug:
+        var: db_host
+      tags: app-tag
 
     - name: Add unit file for Puma
       become: true
