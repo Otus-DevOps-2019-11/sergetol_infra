@@ -12,7 +12,7 @@
   tags: db-tag
   become: true
   vars:
-    mongo_bind_ip: "{{ db_internal_ip }}"
+    mongo_bind_ip: "{{ internal_ip | default( ansible_default_ipv4.address | default( ansible_all_ipv4_addresses[0] | default('127.0.0.1') ) ) }}"
 
   tasks:
     - debug:
@@ -34,7 +34,7 @@
   tags: app-tag
   become: true
   vars:
-    db_host: "{{ db_internal_ip }}:27017"
+    db_host: "{{ hostvars[groups['db'][0]]['internal_ip'] | default( hostvars[groups['db'][0]]['ansible_default_ipv4']['address'] | default( hostvars[groups['db'][0]]['ansible_all_ipv4_addresses'][0] | default('127.0.0.1') ) ) }}:27017"
 
   tasks:
     - debug:

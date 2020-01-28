@@ -11,7 +11,8 @@
       "db": {
         "hosts": {
           "dbserver": {
-            "ansible_host": "35.228.55.239"
+            "ansible_host": "35.228.55.239",
+            "internal_ip": "10.166.0.25"
           }
         }
       }

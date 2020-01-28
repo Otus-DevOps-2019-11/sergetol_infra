@@ -3,7 +3,7 @@
   hosts: db
   become: true
   vars:
-    mongo_bind_ip: "{{ db_internal_ip }}"
+    mongo_bind_ip: "{{ internal_ip | default( ansible_default_ipv4.address | default( ansible_all_ipv4_addresses[0] | default('127.0.0.1') ) ) }}"
 
   tasks:
     - debug:
