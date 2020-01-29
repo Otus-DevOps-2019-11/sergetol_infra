@@ -1,0 +1,17 @@
+---
+plugin: gcp_compute
+auth_kind: serviceaccount
+service_account_file: ~/.gcp/gcp-service-account.json
+projects:
+  - infra-262811
+zones:
+  - europe-north1-a
+groups:
+  app: "'-app' in name"
+  db: "'-db' in name"
+hostnames:
+  - name
+compose:
+  ansible_host: networkInterfaces[0].accessConfigs[0].natIP
+  internal_ip: networkInterfaces[0].networkIP
+strict: true
