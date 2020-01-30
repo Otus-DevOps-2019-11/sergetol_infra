@@ -11,6 +11,8 @@ defaults/main.yml:
 ```
 # MongoDB IP:port to connect app to
 db_host: 127.0.0.1:27017
+# Environment (e.g., stage, prod)
+env: local
 ```
 
 Example Playbook

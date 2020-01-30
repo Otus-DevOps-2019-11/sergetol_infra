@@ -69,3 +69,18 @@ resource "google_compute_address" "app_ip" {
   count = var.vm_count
   name  = "reddit-app-ip${count.index + 1}-${trimspace(var.env)}"
 }
+
+resource "google_compute_firewall" "firewall_nginx_puma" {
+  name = "allow-nginx-puma-default-${trimspace(var.env)}"
+  # Название сети, в которой действует правило
+  network = "default"
+  # Какой доступ разрешить
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+  # Каким адресам разрешаем доступ
+  source_ranges = ["0.0.0.0/0"]
+  # Правило применимо для инстансов с перечисленными тэгами
+  target_tags = ["reddit-app-${trimspace(var.env)}"]
+}
