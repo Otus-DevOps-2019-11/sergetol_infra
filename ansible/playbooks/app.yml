@@ -5,4 +5,5 @@
 
   roles:
     - app
-    - jdauphant.nginx
+    - role: jdauphant.nginx
+      when: need_nginx is defined and need_nginx

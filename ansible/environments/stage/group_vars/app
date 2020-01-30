@@ -1,4 +1,5 @@
 db_host: "{{ hostvars[groups['db'][0]]['internal_ip'] | default(hostvars[groups['db'][0]]['ansible_default_ipv4']['address']) | default(hostvars[groups['db'][0]]['ansible_all_ipv4_addresses'][0]) | default('127.0.0.1') }}:27017"
+need_nginx: false
 nginx_sites:
   default:
     - listen 80
