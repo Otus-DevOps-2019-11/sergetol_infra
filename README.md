@@ -33,6 +33,12 @@ ansible-vault decrypt environments/stage/credentials.yml
 ansible-vault decrypt environments/prod/credentials.yml
 ```
 
+- (**) написаны Travis CI тесты для PR и коммитов в master
+
+  - выполняется packer validate для всех шаблонов
+  - выполняется terraform validate и tflint для бакета и stage и prod окружений
+  - выполняется ansible-playbook --syntax-check и ansible-lint для всех плейбуков
+
 - в README.md добавлен бейдж со статусом билда
 
 # HW9
