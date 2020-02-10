@@ -1,0 +1,9 @@
+---
+- name: Configure App
+  hosts: app
+  become: true
+
+  roles:
+    - app
+    - role: jdauphant.nginx
+      when: need_nginx is defined and need_nginx

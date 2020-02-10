@@ -46,14 +46,17 @@ then
       app_hostvars+=", "
     fi
 
-    db_hostvars+="\"reddit-db-$tf_env\": { \"ansible_host\": \"$db_external_ip\" }"
+    db_hostvars+="\"reddit-db-$tf_env\": { \"ansible_host\": \"$db_external_ip\""
   fi
 
-  all_vars=""
-
-  if [ "$db_internal_ip" != "" ]
+  if [ "$db_hostvars" != "" ]
   then
-    all_vars+="\"db_internal_ip\": \"$db_internal_ip\""
+    if [ "$db_internal_ip" != "" ]
+    then
+      db_hostvars+=", \"internal_ip\": \"$db_internal_ip\" }"
+    else
+      db_hostvars+=" }"
+    fi
   fi
 
 cat<<EOF
@@ -63,10 +66,7 @@ cat<<EOF
       "app",
       "db",
       "ungrouped"
-    ],
-    "vars": {
-      $all_vars
-    }
+    ]
   },
   "app": {
     "hosts": [
