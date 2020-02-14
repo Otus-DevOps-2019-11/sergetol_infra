@@ -2,14 +2,17 @@
 - name: Upgrade all & install python2 if needed
   hosts: all
   become: true
-  gather_facts: False
+  gather_facts: false
 
   tasks:
-    - name: Upgrade all packages
+    - name: Update cache
       apt:
         update_cache: yes
-        upgrade: safe
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: dist
 
     - name: Install python for Ansible
       raw: test -e /usr/bin/python || test -e /usr/bin/python3 || apt-get install -y python-minimal
-      changed_when: False
+      changed_when: false

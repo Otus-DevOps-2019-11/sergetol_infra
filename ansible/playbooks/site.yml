@@ -7,6 +7,14 @@
     - debug:
         var: ansible_host
 
+    - debug:
+        var: deploy_user
+      when: "'app' in group_names"
+
+    - debug:
+        var: need_nginx
+      when: "'app' in group_names"
+
 - import_playbook: base.yml
 - import_playbook: db.yml
 - import_playbook: app.yml
