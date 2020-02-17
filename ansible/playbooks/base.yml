@@ -3,15 +3,12 @@
   hosts: all
   become: true
   gather_facts: false
+  tags: always
 
   tasks:
-    - name: Update cache
-      apt:
-        update_cache: yes
-
-    - name: Upgrade all packages
-      apt:
-        upgrade: dist
+    - name: Update cache & upgrade all packages
+      raw: apt-get update && apt-get upgrade -y
+      changed_when: false
 
     - name: Install python for Ansible
       raw: test -e /usr/bin/python || test -e /usr/bin/python3 || apt-get install -y python-minimal

@@ -1,18 +1,9 @@
 ---
+- import_playbook: base.yml
+
 - name: Install Ruby and Bundler
   hosts: all
   become: true
 
-  tasks:
-    - name: Upgrade all packages
-      apt:
-        update_cache: yes
-        upgrade: dist
-
-    - name: Install required packages
-      apt:
-        name:
-          - ruby-full
-          - ruby-bundler
-          - build-essential
-        state: present
+  roles:
+    - app

@@ -5,5 +5,8 @@
 
   roles:
     - app
-    - role: jdauphant.nginx
+
+  tasks:
+    - include_role:
+        name: jdauphant.nginx
       when: need_nginx is defined and need_nginx
