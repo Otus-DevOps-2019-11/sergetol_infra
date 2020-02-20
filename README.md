@@ -19,7 +19,7 @@ curl http://10.10.10.20
 vagrant destroy -f
 ```
 
-- выполнено тестирование роли db при помощи Molecule и Testinfra
+- выполнено локальное (vagrant, virtualbox) тестирование роли db при помощи Molecule и Testinfra
 
 ```
 # в директории ansible/roles/db:
@@ -42,6 +42,14 @@ ansible-playbook playbooks/packer_app.yml --limit app --tags ruby
 packer build -var-file=packer/variables.json packer/db.json
 packer build -var-file=packer/variables.json packer/app.json
 ```
+
+- (*) роль db вынесена в отдельный репозиторий (https://github.com/sergetol/ansible_role_db)
+
+  - к этому репозиторию подключен Travis CI для автотестов роли при помощи Molecule и Testinfra в GCE
+  - настроено оповещение в Slack канал о коммитах в этот репозиторий
+  - настроено оповещение в Slack канал о результатах билда
+  - в README.md у роли добавлен бейдж со статусом билда
+  - эта внешняя роль подключена через requirements.yml окружений stage и prod;<br/>плейбук db.yml теперь использует эту внешнюю роль
 
 # HW10
 
