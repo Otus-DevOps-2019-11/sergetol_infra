@@ -4,6 +4,53 @@
 
 sergetol Infra repository
 
+# HW11
+
+- доработаны роли для возможности провижининга в Vagrant, в том числе и настройка nginx (*)
+
+```
+# в директории ansible:
+vagrant up
+# для проверки работы приложения:
+curl http://10.10.10.20:9292
+# или через nginx:
+curl http://10.10.10.20
+# затем:
+vagrant destroy -f
+```
+
+- выполнено локальное (vagrant, virtualbox) тестирование роли db при помощи Molecule и Testinfra
+
+```
+# в директории ansible/roles/db:
+molecule create
+molecule converge
+molecule verify
+# затем:
+molecule destroy
+# или все разом:
+molecule test
+```
+
+- переключена сборка образов с помощью Packer на использование ролей app и db
+
+```
+# в директории ansible для проверки вне Packer на предварительно поднятой с помощью Terraform инфраструктуре:
+ansible-playbook playbooks/packer_db.yml --limit db --tags install
+ansible-playbook playbooks/packer_app.yml --limit app --tags ruby
+# в корневой директории репозитория (пере)сборка образов с помощью Packer:
+packer build -var-file=packer/variables.json packer/db.json
+packer build -var-file=packer/variables.json packer/app.json
+```
+
+- (*) роль db вынесена в отдельный репозиторий (https://github.com/sergetol/ansible_role_db)
+
+  - к этому репозиторию подключен Travis CI для автотестов роли при помощи Molecule и Testinfra в GCE
+  - настроено оповещение в Slack канал о коммитах в этот репозиторий
+  - настроено оповещение в Slack канал о результатах билда
+  - в README.md у роли добавлен бейдж со статусом билда
+  - эта внешняя роль подключена через requirements.yml окружений stage и prod;<br/>плейбук db.yml теперь использует эту внешнюю роль
+
 # HW10
 
 - перенесены созданные плейбуки app и db в соответствующие роли
